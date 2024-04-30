@@ -17,7 +17,10 @@ addButton.addEventListener("click", () => {
     numberHolder.innerHTML += " ";
     return;
   }
-  addButton.classList.remove("active");
+
+  const num = result.innerHTML.trim();
+  result.innerHTML = parseFloat(num) + parseFloat(num);
+  numberHolder.innerHTML = result.innerHTML;
 });
 
 equalsButton.addEventListener("click", () => {
