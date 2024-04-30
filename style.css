@@ -11,6 +11,10 @@ body {
     background-color: #fdf0d5;
 }
 
+.number-holder {
+    font-size: 0px;
+}
+
 .display {
     width: 89%;
     height: 12%;
@@ -75,4 +79,7 @@ body {
     background-color: #ee6c4d;
 }
 
+.row button:active {
+    background-color: lightgrey;
+}
 
