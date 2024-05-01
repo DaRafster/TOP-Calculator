@@ -98,9 +98,10 @@ numbers.forEach((num) => {
     }
 
     if (
-      addButton.classList.contains("active") ||
-      subtractButton.classList.contains("active") ||
-      multiplyButton.classList.contains("active")
+      (addButton.classList.contains("active") ||
+        subtractButton.classList.contains("active") ||
+        multiplyButton.classList.contains("active")) &&
+      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) == " "
     ) {
       result.innerHTML = num.innerHTML;
     } else {
