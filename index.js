@@ -1,5 +1,6 @@
 let clearButton = document.querySelector(".clear");
 let addButton = document.querySelector(".add");
+let subtractButton = document.querySelector(".subtract");
 let equalsButton = document.querySelector(".enter");
 let result = document.querySelector(".result");
 let numbers = document.querySelectorAll(".number");
@@ -9,34 +10,76 @@ clearButton.addEventListener("click", () => {
   result.innerHTML = "0";
   numberHolder.innerHTML = "";
   addButton.classList.remove("active");
+  subtractButton.classList.remove("active");
 });
 
 addButton.addEventListener("click", () => {
   if (!addButton.classList.contains("active")) {
+    subtractButton.classList.remove("active");
     addButton.classList.add("active");
-    numberHolder.innerHTML += " ";
+
+    if (
+      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) != " "
+    ) {
+      numberHolder.innerHTML += " ";
+    }
+
     return;
   }
+});
 
-  const num = result.innerHTML.trim();
-  result.innerHTML = parseFloat(num) + parseFloat(num);
-  numberHolder.innerHTML = result.innerHTML;
+subtractButton.addEventListener("click", () => {
+  if (!subtractButton.classList.contains("active")) {
+    addButton.classList.remove("active");
+    subtractButton.classList.add("active");
+
+    if (
+      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) != " "
+    ) {
+      numberHolder.innerHTML += " ";
+    }
+
+    return;
+  }
 });
 
 equalsButton.addEventListener("click", () => {
   if (numberHolder.innerHTML.trim().split(" ").length <= 1) {
     return;
   }
-  addButton.classList.remove("active");
   const [num1, num2] = numberHolder.innerHTML.split(" ");
-  result.innerHTML = parseFloat(num1) + parseFloat(num2);
+  if (addButton.classList.contains("active")) {
+    result.innerHTML = parseFloat(num1) + parseFloat(num2);
+    addButton.classList.remove("active");
+    result.classList.add("total");
+  } else if (subtractButton.classList.contains("active")) {
+    result.innerHTML = parseFloat(num1) - parseFloat(num2);
+    subtractButton.classList.remove("active");
+    result.classList.add("total");
+  }
+
   numberHolder.innerHTML = result.innerHTML;
 });
 
 numbers.forEach((num) => {
   num.addEventListener("click", () => {
     if (result.innerHTML === "0") result.innerHTML = "";
-    if (addButton.classList.contains("active")) {
+
+    if (
+      result.classList.contains("total") &&
+      !addButton.classList.contains("active") &&
+      !subtractButton.classList.contains("active")
+    ) {
+      result.innerHTML = num.innerHTML;
+      result.classList.remove("total");
+      numberHolder.innerHTML = "";
+      result.innerHTML = "";
+    }
+
+    if (
+      addButton.classList.contains("active") ||
+      subtractButton.classList.contains("active")
+    ) {
       result.innerHTML = num.innerHTML;
     } else {
       result.innerHTML += num.innerHTML;
