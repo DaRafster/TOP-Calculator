@@ -1,27 +1,28 @@
-let clearButton = document.querySelector(".clear");
-let addButton = document.querySelector(".add");
-let subtractButton = document.querySelector(".subtract");
-let divideButton = document.querySelector(".divide");
-let multiplyButton = document.querySelector(".multiply");
-let equalsButton = document.querySelector(".enter");
-let deleteButton = document.querySelector(".delete");
-let percentButton = document.querySelector(".percent");
-let decimalButton = document.querySelector(".decimal");
-let display = document.querySelector(".result-display");
-let numbers = document.querySelectorAll(".number");
-let operatorHolder = document.querySelector(".operator-holder");
-let reverseSignButton = document.querySelector(".plus-minus");
-let previousNumber = document.querySelector(".prev-number");
+const clearButton = document.querySelector(".clear");
+const addButton = document.querySelector(".add");
+const subtractButton = document.querySelector(".subtract");
+const divideButton = document.querySelector(".divide");
+const multiplyButton = document.querySelector(".multiply");
+const equalsButton = document.querySelector(".enter");
+const deleteButton = document.querySelector(".delete");
+const percentButton = document.querySelector(".percent");
+const decimalButton = document.querySelector(".decimal");
+const display = document.querySelector(".result-display");
+const numbers = document.querySelectorAll(".number");
+const operatorHolder = document.querySelector(".operator-holder");
+const reverseSignButton = document.querySelector(".plus-minus");
+const previousNumber = document.querySelector(".prev-number");
+const zero = document.querySelector(".zero");
 
-clearButton.addEventListener("click", () => {
+const clear = () => {
   display.innerHTML = "0";
   display.classList.add("update");
   operatorHolder.innerHTML = "";
   previousNumber.innerHTML = "";
   decimalButton.disabled = false;
-});
+};
 
-deleteButton.addEventListener("click", () => {
+const deleteLast = () => {
   if (display.innerHTML.charAt(display.innerHTML.length - 1) === ".") {
     decimalButton.disabled = false;
   }
@@ -40,37 +41,9 @@ deleteButton.addEventListener("click", () => {
     display.innerHTML = "0";
     display.classList.add("update");
   }
-});
+};
 
-addButton.addEventListener("click", () => {
-  operatorHolder.innerHTML = `+`;
-  previousNumber.innerHTML = display.innerHTML;
-  decimalButton.disabled = false;
-  display.classList.add("update");
-});
-
-subtractButton.addEventListener("click", () => {
-  operatorHolder.innerHTML = `-`;
-  previousNumber.innerHTML = display.innerHTML;
-  decimalButton.disabled = false;
-  display.classList.add("update");
-});
-
-multiplyButton.addEventListener("click", () => {
-  operatorHolder.innerHTML = "×";
-  previousNumber.innerHTML = display.innerHTML;
-  decimalButton.disabled = false;
-  display.classList.add("update");
-});
-
-divideButton.addEventListener("click", () => {
-  operatorHolder.innerHTML = "÷";
-  previousNumber.innerHTML = display.innerHTML;
-  decimalButton.disabled = false;
-  display.classList.add("update");
-});
-
-percentButton.addEventListener("click", () => {
+const percentage = () => {
   let calculatedResult = parseFloat(display.innerHTML) / 100;
   display.innerHTML = calculatedResult;
   previousNumber.innerHTML = calculatedResult;
@@ -79,10 +52,17 @@ percentButton.addEventListener("click", () => {
   if (display.clientWidth > display.parentElement.clientWidth - 50) {
     display.innerHTML = calculatedResult.toPrecision(2);
   }
-});
+};
 
-decimalButton.addEventListener("click", () => {
-  if (display.innerHTML === "") {
+const operation = (oper) => {
+  operatorHolder.innerHTML = oper;
+  previousNumber.innerHTML = display.innerHTML;
+  decimalButton.disabled = false;
+  display.classList.add("update");
+};
+
+const addDecimal = () => {
+  if (display.innerHTML === "" || decimalButton.disabled === true) {
     return;
   } else if (display.classList.contains("update")) {
     display.innerHTML = "0";
@@ -91,9 +71,9 @@ decimalButton.addEventListener("click", () => {
   display.innerHTML += ".";
   decimalButton.disabled = true;
   display.classList.remove("update");
-});
+};
 
-equalsButton.addEventListener("click", () => {
+const getResult = () => {
   if (previousNumber.innerHTML === "") {
     return;
   }
@@ -134,19 +114,56 @@ equalsButton.addEventListener("click", () => {
 
   operatorHolder.innerHTML = "";
   display.classList.add("update");
+};
+
+clearButton.addEventListener("click", clear);
+deleteButton.addEventListener("click", deleteLast);
+addButton.addEventListener("click", () => operation("+"));
+subtractButton.addEventListener("click", () => operation("-"));
+multiplyButton.addEventListener("click", () => operation("×"));
+divideButton.addEventListener("click", () => operation("÷"));
+percentButton.addEventListener("click", percentage);
+decimalButton.addEventListener("click", addDecimal);
+equalsButton.addEventListener("click", getResult);
+reverseSignButton.addEventListener("click", () => {
+  display.innerHTML = -parseFloat(display.innerHTML);
 });
 
-reverseSignButton.addEventListener("click", () => {
-  display.innerHTML = parseFloat(display.innerHTML) * -1;
+document.addEventListener("keydown", (evt) => {
+  if (display.innerHTML === "0" && evt.key === "0") {
+    return;
+  }
+
+  if (evt.key >= "0" && evt.key <= "9") {
+    if (display.classList.contains("update")) {
+      display.innerHTML = evt.key;
+      display.classList.remove("update");
+    } else {
+      if (display.clientWidth > display.parentElement.clientWidth - 50) {
+        return;
+      }
+      display.innerHTML += evt.key;
+    }
+  } else if (evt.key === "Backspace") {
+    deleteLast();
+  } else if (evt.key === ".") {
+    addDecimal();
+  } else if (evt.key === "Enter") {
+    getResult();
+  }
 });
 
 numbers.forEach((num) => {
   num.addEventListener("click", () => {
+    if (display.innerHTML === "0" && num === zero) {
+      return;
+    }
+
     if (display.classList.contains("update")) {
       display.innerHTML = num.innerHTML;
       display.classList.remove("update");
     } else {
-      if (display.innerHTML.length >= 14) {
+      if (display.clientWidth > display.parentElement.clientWidth - 50) {
         return;
       }
       display.innerHTML += num.innerHTML;
