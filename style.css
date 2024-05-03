@@ -11,7 +11,7 @@ body {
     background-color: #fdf0d5;
 }
 
-.number-holder {
+.operator-holder, .prev-number {
     font-size: 0px;
 }
 
@@ -25,13 +25,14 @@ body {
     align-items: center;
     background-color: #98c1d9;
     color: black;
+    overflow: hidden;
 }
 
 .filler {
     flex-grow: 1;
 }
 
-.result {
+.result-display {
     margin-right: 20px;
     font-size: 24px;
 }
@@ -72,7 +73,7 @@ body {
     cursor: pointer;
 }
 
-.row .text-button {
+.row .clear, .row .delete {
     font-size: 16px;
     font-weight: 500;
     letter-spacing: 1px;;

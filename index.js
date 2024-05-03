@@ -1,113 +1,155 @@
 let clearButton = document.querySelector(".clear");
 let addButton = document.querySelector(".add");
 let subtractButton = document.querySelector(".subtract");
+let divideButton = document.querySelector(".divide");
 let multiplyButton = document.querySelector(".multiply");
 let equalsButton = document.querySelector(".enter");
-let result = document.querySelector(".result");
+let deleteButton = document.querySelector(".delete");
+let percentButton = document.querySelector(".percent");
+let decimalButton = document.querySelector(".decimal");
+let display = document.querySelector(".result-display");
 let numbers = document.querySelectorAll(".number");
-let numberHolder = document.querySelector(".number-holder");
+let operatorHolder = document.querySelector(".operator-holder");
+let reverseSignButton = document.querySelector(".plus-minus");
+let previousNumber = document.querySelector(".prev-number");
 
 clearButton.addEventListener("click", () => {
-  result.innerHTML = "0";
-  numberHolder.innerHTML = "";
-  addButton.classList.remove("active");
-  subtractButton.classList.remove("active");
-  multiplyButton.classList.remove("active");
+  display.innerHTML = "0";
+  display.classList.add("update");
+  operatorHolder.innerHTML = "";
+  previousNumber.innerHTML = "";
+  decimalButton.disabled = false;
+});
+
+deleteButton.addEventListener("click", () => {
+  if (display.innerHTML.charAt(display.innerHTML.length - 1) === ".") {
+    decimalButton.disabled = false;
+  }
+
+  display.innerHTML = display.innerHTML.substring(
+    0,
+    display.innerHTML.length - 1
+  );
+
+  if (display.classList.contains("update")) {
+    display.innerHTML = "0";
+    return;
+  }
+
+  if (display.innerHTML === "") {
+    display.innerHTML = "0";
+    display.classList.add("update");
+  }
 });
 
 addButton.addEventListener("click", () => {
-  if (!addButton.classList.contains("active")) {
-    subtractButton.classList.remove("active");
-    multiplyButton.classList.remove("active");
-    addButton.classList.add("active");
-
-    if (
-      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) != " "
-    ) {
-      numberHolder.innerHTML += " ";
-    }
-
-    return;
-  }
+  operatorHolder.innerHTML = `+`;
+  previousNumber.innerHTML = display.innerHTML;
+  decimalButton.disabled = false;
+  display.classList.add("update");
 });
 
 subtractButton.addEventListener("click", () => {
-  if (!subtractButton.classList.contains("active")) {
-    addButton.classList.remove("active");
-    multiplyButton.classList.remove("active");
-    subtractButton.classList.add("active");
-
-    if (
-      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) != " "
-    ) {
-      numberHolder.innerHTML += " ";
-    }
-
-    return;
-  }
+  operatorHolder.innerHTML = `-`;
+  previousNumber.innerHTML = display.innerHTML;
+  decimalButton.disabled = false;
+  display.classList.add("update");
 });
 
 multiplyButton.addEventListener("click", () => {
-  if (!multiplyButton.classList.contains("active")) {
-    addButton.classList.remove("active");
-    subtractButton.classList.remove("active");
-    multiplyButton.classList.add("active");
-    if (
-      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) != " "
-    ) {
-      numberHolder.innerHTML += " ";
-    }
+  operatorHolder.innerHTML = "×";
+  previousNumber.innerHTML = display.innerHTML;
+  decimalButton.disabled = false;
+  display.classList.add("update");
+});
+
+divideButton.addEventListener("click", () => {
+  operatorHolder.innerHTML = "÷";
+  previousNumber.innerHTML = display.innerHTML;
+  decimalButton.disabled = false;
+  display.classList.add("update");
+});
+
+percentButton.addEventListener("click", () => {
+  let calculatedResult = parseFloat(display.innerHTML) / 100;
+  display.innerHTML = calculatedResult;
+  previousNumber.innerHTML = calculatedResult;
+  display.classList.add("update");
+
+  if (display.clientWidth > display.parentElement.clientWidth - 50) {
+    display.innerHTML = calculatedResult.toPrecision(2);
   }
 });
 
-equalsButton.addEventListener("click", () => {
-  if (numberHolder.innerHTML.trim().split(" ").length <= 1) {
+decimalButton.addEventListener("click", () => {
+  if (display.innerHTML === "") {
     return;
-  }
-  const [num1, num2] = numberHolder.innerHTML.split(" ");
-  if (addButton.classList.contains("active")) {
-    result.innerHTML = parseFloat(num1) + parseFloat(num2);
-    addButton.classList.remove("active");
-    result.classList.add("total");
-  } else if (subtractButton.classList.contains("active")) {
-    result.innerHTML = parseFloat(num1) - parseFloat(num2);
-    subtractButton.classList.remove("active");
-    result.classList.add("total");
-  } else if (multiplyButton.classList.contains("active")) {
-    result.innerHTML = parseFloat(num1) * parseFloat(num2);
-    multiplyButton.classList.remove("active");
-    result.classList.add("total");
+  } else if (display.classList.contains("update")) {
+    display.innerHTML = "0";
   }
 
-  numberHolder.innerHTML = result.innerHTML;
+  display.innerHTML += ".";
+  decimalButton.disabled = true;
+  display.classList.remove("update");
+});
+
+equalsButton.addEventListener("click", () => {
+  if (previousNumber.innerHTML === "") {
+    return;
+  }
+
+  let num1 = parseFloat(previousNumber.innerHTML);
+  let num2 = parseFloat(display.innerHTML);
+  let calculatedResult = 0;
+
+  let operator = operatorHolder.innerHTML;
+  switch (operator) {
+    case "+":
+      calculatedResult = num1 + num2;
+      display.innerHTML = calculatedResult;
+      break;
+    case "-":
+      calculatedResult = num1 - num2;
+      display.innerHTML = calculatedResult;
+      break;
+    case "×":
+      calculatedResult = num1 * num2;
+      display.innerHTML = calculatedResult;
+      break;
+    case "÷":
+      if (num2 === 0) {
+        display.innerHTML = "LOL";
+      } else {
+        calculatedResult = num1 / num2;
+        display.innerHTML = calculatedResult;
+      }
+      break;
+    default:
+      break;
+  }
+
+  if (display.clientWidth > display.parentElement.clientWidth - 50) {
+    display.innerHTML = calculatedResult.toPrecision(11).replace(/0+$/, "");
+  }
+
+  operatorHolder.innerHTML = "";
+  display.classList.add("update");
+});
+
+reverseSignButton.addEventListener("click", () => {
+  display.innerHTML = parseFloat(display.innerHTML) * -1;
 });
 
 numbers.forEach((num) => {
   num.addEventListener("click", () => {
-    if (result.innerHTML === "0") result.innerHTML = "";
-
-    if (
-      result.classList.contains("total") &&
-      !addButton.classList.contains("active") &&
-      !subtractButton.classList.contains("active")
-    ) {
-      result.innerHTML = num.innerHTML;
-      result.classList.remove("total");
-      numberHolder.innerHTML = "";
-      result.innerHTML = "";
-    }
-
-    if (
-      (addButton.classList.contains("active") ||
-        subtractButton.classList.contains("active") ||
-        multiplyButton.classList.contains("active")) &&
-      numberHolder.innerHTML.charAt(numberHolder.innerHTML.length - 1) == " "
-    ) {
-      result.innerHTML = num.innerHTML;
+    if (display.classList.contains("update")) {
+      display.innerHTML = num.innerHTML;
+      display.classList.remove("update");
     } else {
-      result.innerHTML += num.innerHTML;
+      if (display.innerHTML.length >= 14) {
+        return;
+      }
+      display.innerHTML += num.innerHTML;
     }
-
-    numberHolder.innerHTML += num.innerHTML;
   });
 });
